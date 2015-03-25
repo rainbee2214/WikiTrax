@@ -19,5 +19,14 @@
     "webNavigation",
     "tabs",
     "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      // Change 'matches' attribute to load content
+      // script only in pages you want to.
+      "matches": ["https://en.wikipedia.org/wiki/*"],
+      "css": ["css/basic.css"],
+      "js": ["js/popup.js"]
+    }
   ]
 }
