@@ -44,7 +44,9 @@ function SetNewReadingPage()
     {
         console.log(val);
         var existingReadingPages = val.readingPages;
-        existingReadingPages.push(readingPage);
+        if (!_.find(existingReadingPages, function(e){
+            if (e.url == readingPage.url) return true;
+        })) existingReadingPages.push(readingPage);
         console.log("Check order here: ", existingReadingPages);
         chrome.storage.local.set({readingPages: existingReadingPages});
     });
@@ -68,13 +70,18 @@ function GoBackToReadingPage()
     console.log(currentUrl);
     chrome.storage.local.get("readingPages", function(val)
     {
+        
+        if (currentUrl == lastReadingPageUrl) val.readingPages.pop();
+
+        if (val.readingPages.length == 0)
+        {
+            alert('my alert');
+        }
         lastReadingPageUrl = val.readingPages[val.readingPages.length-1].url;
-        if (currentUrl == lastReadingPageUrl)
-            val.readingPages.pop();
-        chrome.tabs.update(tab[0].id, {url: val.readingPages[val.readingPages.length-1].url});
+        chrome.tabs.update(tab[0].id, {url: lastReadingPageUrl});
         chrome.storage.local.set({readingPages: val.readingPages});
         $("#titleOfPage").html(val.readingPages[val.readingPages.length-1].title);
-        console.log(val.readingPages);
+        console.log("After button click.", val.readingPages);
     });
   });
 
