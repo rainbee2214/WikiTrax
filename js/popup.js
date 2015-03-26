@@ -45,9 +45,9 @@ function SetNewReadingPage()
         console.log(val);
         var existingReadingPages = val.readingPages;
         existingReadingPages.push(readingPage);
-        console.log(existingReadingPages);
+        console.log("Check order here: ", existingReadingPages);
         chrome.storage.local.set({readingPages: existingReadingPages});
-    })
+    });
   });
 
   //Add data to the graphs
@@ -58,6 +58,14 @@ function GoBackAReadingPage()
   console.log('This is the go back button.');
   //Pop the stack
   //Go to that url [it is the last reading page we were on]
+  chrome.tabs.query({active: true}, function (tab)
+  {
+    chrome.storage.local.get("readingPages", function(val)
+    {
+        chrome.tabs.update(tab[0].id, {url: val.readingPages[val.readingPages.length-1].url});
+        console.log(val.readingPages.pop());
+    });
+  });
 
   //Add data to the graphs
 }
