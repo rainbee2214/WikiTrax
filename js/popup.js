@@ -8,7 +8,7 @@ function OnWindowLoad()
     });
 
     $('#goBackButton').click(function(){
-      GoBackAReadingPage();
+      GoBackToReadingPage();
     });
     chrome.storage.local.get("readingPages", function(val)
     {
@@ -53,17 +53,28 @@ function SetNewReadingPage()
   //Add data to the graphs
 }
 
-function GoBackAReadingPage()
+function GoBackToReadingPage()
 {
-  console.log('This is the go back button.');
+    //If we are on a reading page, pop that page and go to reading pages.length - 1
+    //else go to reading pares.length -1 
   //Pop the stack
   //Go to that url [it is the last reading page we were on]
+
+  var currentUrl;
+  var lastReadingPageUrl;
   chrome.tabs.query({active: true}, function (tab)
   {
+    currentUrl = tab[0].url;
+    console.log(currentUrl);
     chrome.storage.local.get("readingPages", function(val)
     {
+        lastReadingPageUrl = val.readingPages[val.readingPages.length-1].url;
+        if (currentUrl == lastReadingPageUrl)
+            val.readingPages.pop();
         chrome.tabs.update(tab[0].id, {url: val.readingPages[val.readingPages.length-1].url});
-        console.log(val.readingPages.pop());
+        chrome.storage.local.set({readingPages: val.readingPages});
+        $("#titleOfPage").html(val.readingPages[val.readingPages.length-1].title);
+        console.log(val.readingPages);
     });
   });
 

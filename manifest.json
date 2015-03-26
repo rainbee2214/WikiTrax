@@ -11,7 +11,7 @@
   },
 
   "browser_action": {
-    "default_icon": "assets/icon.png",
+    "default_icon": "assets/CherryTree.png",
     "default_popup": "html/popup.html"
   },
 
