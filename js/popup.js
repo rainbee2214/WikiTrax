@@ -10,6 +10,11 @@ function OnWindowLoad()
     $('#goBackButton').click(function(){
       GoBackToReadingPage();
     });
+
+    $('#viewGraphsButton').click(function(){
+      ViewGraphs();
+    });
+
     chrome.storage.local.get("readingPages", function(val)
     {
         if (val.readingPages.length == 0)
@@ -50,6 +55,10 @@ function SetNewReadingPage()
         console.log("Check order here: ", existingReadingPages);
         chrome.storage.local.set({readingPages: existingReadingPages});
     });
+
+    
+    MineData(tab[0].url.length);
+
   });
 
   //Add data to the graphs
@@ -67,11 +76,17 @@ function GoBackToReadingPage()
   chrome.tabs.query({active: true}, function (tab)
   {
     currentUrl = tab[0].url;
+    //window.open(tab[0].url,'_blank');
     console.log(currentUrl);
+    MineData(tab[0].title.length);
     chrome.storage.local.get("readingPages", function(val)
     {
+    //if (val.readingPages.length > 2) lastReadingPageUrl = val.readingPages[val.readingPages.length-2].url;
         
-        if (currentUrl == lastReadingPageUrl) val.readingPages.pop();
+        if (currentUrl == val.readingPages[val.readingPages.length-1].url) 
+            {
+                val.readingPages.pop();
+            }
 
         if (val.readingPages.length == 0)
         {
@@ -84,8 +99,30 @@ function GoBackToReadingPage()
         console.log("After button click.", val.readingPages);
     });
   });
-
+  
   //Add data to the graphs
+}
+
+function ViewGraphs()
+{
+
+    chrome.storage.local.get("dataSets", function(val)
+    {
+        console.log("Data sets: ",val);
+    });
+    window.open("graph.html",'_blank');
+}
+
+function MineData(tabData)
+{
+    var dataSet = tabData;
+    chrome.storage.local.get("dataSets", function(val)
+    {
+        var existingDataSets = val.dataSets;
+        existingDataSets.push(dataSet);
+        console.log("Data sets: ",existingDataSets);
+        chrome.storage.local.set({dataSets: existingDataSets});
+    });
 }
 
 function OnNewWikiPage(visited)

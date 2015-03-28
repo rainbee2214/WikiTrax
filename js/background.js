@@ -37,4 +37,5 @@ chrome.runtime.onInstalled.addListener(function()
 {
 	chrome.storage.local.clear();
 	chrome.storage.local.set({readingPages: []});
+	chrome.storage.local.set({dataSets: []});
 })

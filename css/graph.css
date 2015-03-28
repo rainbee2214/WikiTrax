@@ -1,3 +1,7 @@
+body {
+	text-align: center;
+}
+
 div.bar {
     display: inline-block;
     width: 20px;

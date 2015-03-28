@@ -39,3 +39,7 @@ body {
 .newReadingPage {
     background: rgb(58, 168, 229); /* this is a light blue */
 }
+
+.viewGraphs {
+    background: rgb(223, 117, 20); /* this is an orange */
+}
