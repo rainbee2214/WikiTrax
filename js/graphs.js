@@ -7,76 +7,131 @@ function OnWindowLoad()
 {
     chrome.storage.local.get("dataSets", function(val)
     {
-        console.log("Data sets: ",val.dataSets);
+        //console.log("Data sets: ",val.dataSets);
         //DrawBarChart(val.dataSets);
         //ExampleDrawScatterPlot();
-        DrawDotChart(val.dataSets);
+        // DrawDotChart(val.dataSets);
+        DrawCategoryChart();
     });
 
 }
 
 function DrawCategoryChart()
 {
+	console.log("Drawing graph");
+	var categoryDataset;
 	var dataset = [];
 	chrome.storage.local.get("categoryData", function(val)
     {
-        dataset = val.categoryData;
-    	console.log("Dataset for category chart:", dataset);
-    }
+		console.log("Drawing graph......");
+        categoryDataset = val.categoryData;
+
+        categoryDataset.forEach(function(element)
+        {
+        	console.log(element.name, element.timesVisited);
+        	dataset.push([element.name, element.timesVisited]);
+        })
+
+		var w = 600;
+		var h = 300;
+		var xRange = w;
+		var yRange = h;
+		var padding = 20;
+
+		var xScale = d3.scale.linear()
+				 .domain([0, xRange])
+				 .range([padding, yRange*2 - padding * 2]);
+		var yScale = d3.scale.linear()
+				 .domain([0, xRange])
+				 .range([yRange - padding, padding]);
+		var xAxis = d3.svg.axis()
+			  .scale(xScale)
+			  .orient("bottom")
+			  .ticks(5);
+		var yAxis = d3.svg.axis()
+			  .scale(yScale)
+			  .orient("left")
+			  .ticks(5);
+
+		var tooltip = d3.select("body")
+			.append("div")
+			.style("position", "absolute")
+			.style("z-index", "10")
+			.style("visibility", "hidden")
+
+		var svg = d3.select(".svgDiv")
+					.append("svg")
+					.attr("width", w)
+					.attr("height", h);
+
+		svg.append("g")
+			.attr("class", "axis")
+			.attr("transform", "translate(0," + (h - padding) + ")")
+			.call(xAxis);
+
+	   svg.selectAll("circle")
+			   .data(dataset)
+			   .enter()
+			   .append("circle")
+
+			   .attr("cx", function(d,i) {
+			   		return xScale((i*8));
+			   })
+			   .attr("cy", function(d,i) {
+			   		return yScale((i*8));
+			   })
+			   .attr("r", function(d,i) {
+			   		return d[1];
+			   })
+			   .on("mouseover", function(d)
+			   	{
+			   		tooltip.text(d[0]);
+			   		return tooltip.style("visibility", "visible");
+			   	})
+			   .on("mousemove", function()
+			   	{
+			   		return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+			   })
+			   .on("mouseout", function()
+			   	{
+			   		return tooltip.style("visibility", "hidden");
+			   	});
+
+    });
+
+
 }
 
 
-function DrawDotChart(dataset)
+function DrawDotChart()
 {
-	//dataset = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15];
-	var w = 600;
-	var h = 600;
-	var xRange = 100;
-	var yRange = h;
-	var padding = 20;
+	var categoryDataset = [];
+	var dataset = [];
+	chrome.storage.local.get("categoryData", function(val)
+    {
+        categoryDataset = val.categoryData;
+		categoryDataset.forEach(function(category)
+			{
+				dataset.push([category.name, category.timesVisited]);
+			});
+    });
 
-	//Create scale functions
-	var xScale = d3.scale.linear()
-			 .domain([0, xRange])
-			 .range([padding, yRange - padding * 2]);
-
-	var yScale = d3.scale.linear()
-			 .domain([0, xRange])
-			 .range([yRange - padding, padding]);
-
-	//Define X axis
-	var xAxis = d3.svg.axis()
-		  .scale(xScale)
-		  .orient("bottom")
-		  .ticks(5);
-
-	//Define Y axis
-	var yAxis = d3.svg.axis()
-		  .scale(yScale)
-		  .orient("left")
-		  .ticks(5);
-
-	var svg = d3.select("body")
-				.append("svg")
-				.attr("width", w)
-				.attr("height", h);
-
-	svg.append("g")
-		.attr("class", "axis")
-		.attr("transform", "translate(0," + (h - padding) + ")")
-		.call(xAxis);
-
-	svg.selectAll("circle")
-	   .data(dataset)
-	   .enter()
-	   .append("circle")
-	   .attr("cx", function(d, i) {
-	   		return xScale(i);
-	   })
-	   .attr("cy", function(d) {
-	   		return yScale(d);
-	   })
-	   .attr("r", 2);
+	d3.select("p").on("click", function()
+	{
+		svg.selectAll("circle")
+		   .data(dataset)
+		   .transition()
+		   .duration(1000)
+		   .attr("cx", function(d, i) {
+		   		return xScale(i);
+		   })
+		   .attr("cy", function(d,i) {
+		   		return yScale(i);
+		   })
+		   .attr("r", function(d) {
+		   		return d[1];
+		   });
+	});
 }
 
 function DrawBarChart(dataset)
