@@ -77,7 +77,7 @@ function GoBackToReadingPage()
   {
     currentUrl = tab[0].url;
     //window.open(tab[0].url,'_blank');
-    console.log(currentUrl);
+    console.log("Extension ID: ", chrome.runtime.id);
     MineData(tab[0].title.length);
     chrome.storage.local.get("readingPages", function(val)
     {
@@ -105,12 +105,43 @@ function GoBackToReadingPage()
 
 function ViewGraphs()
 {
-
     chrome.storage.local.get("dataSets", function(val)
     {
         console.log("Data sets: ",val);
     });
-    window.open("graph.html",'_blank');
+    chrome.tabs.query({currentWindow: true}, function (tab)
+    {
+        var pattern = /chrome-extension:\/\/hdfncdlklhmfhffecjmglmlfgbmjbkck\/html\/graph\.html/img;
+        var count = 0;
+        var tabIsOpenAlready = false;
+        var currentTabIdIfOpen;
+        var currentTabIndexIfOpen;
+        tab.forEach(function(token)
+        {
+            console.log(count++, token);
+            if (pattern.test(token.url))
+            {
+                console.log(token);
+                tabIsOpenAlready = true;
+                currentTabIdIfOpen = token.id;
+                currentTabIndexIfOpen = token.index;
+            } 
+        });
+        if (tabIsOpenAlready) 
+        {
+            console.log(currentTabIdIfOpen);
+            chrome.tabs.reload(currentTabIdIfOpen);
+            chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window)
+                {
+
+                });
+        }
+        else
+        {
+            window.open("graph.html",'_blank');
+        }
+    });
+
 }
 
 function MineData(tabData)
