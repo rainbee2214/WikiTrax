@@ -11,7 +11,148 @@ function OnWindowLoad()
         //DrawBarChart(val.dataSets);
         //ExampleDrawScatterPlot();
         // DrawDotChart(val.dataSets);
-        DrawCategoryChart();
+        DrawForceGraphExample();
+    });
+
+}
+
+function DrawForceGraphExample()
+{
+
+	var categoryDataset;
+	var dataset = [];
+	chrome.storage.local.get("categoryData", function(val)
+	{
+		console.log("Drawing graph......");
+	    categoryDataset = val.categoryData;
+
+	    categoryDataset.forEach(function(element)
+	    {
+	    	dataset.push([element.name, element.timesVisited]);
+	    });
+
+		var tooltip = d3.select("body")
+		  .append("div")
+		  .style("position", "absolute")
+		  .style("z-index", "10")
+		  .style("visibility", "hidden")
+
+		var radii = [];
+		dataset.forEach(function(element)
+		{
+			radii.push(element[1]);
+		});
+
+		var width = 960,
+		    height = 500;
+
+		var sizeScale = 8;
+		var dataMaxRadius = d3.max(radii);
+		console.log("Max radius", dataMaxRadius);
+		var scale = d3.scale.linear()
+		      .domain([0, dataMaxRadius])
+		      .range([0,100]);
+
+
+		console.log(scale(.75));
+		console.log(scale(9));
+
+		var svg = d3.select("body").append("svg")
+		    .attr("width", width)
+		    .attr("height", height);
+
+		var nodes = d3.range(dataset.length).map(function(d) 
+		    {
+	    	var r = dataset[d][1];
+		     return {radius: scale(r), name: dataset[d][0]}; 
+		 	}),
+		    root = nodes[0],
+		    color = d3.scale.category20b();
+
+			console.log("Nodes", nodes);
+		  root.radius = 0;
+		  root.fixed = true;
+
+		var force = d3.layout.force()
+		    .gravity(0.05)
+		    //.charge(function(d, i) { return i ? 0 : -2000; })
+		    .nodes(nodes)
+		    .linkDistance(width*4)
+		    .size([width, height]);
+
+		force.start();
+
+
+		svg.selectAll("circle")
+		    .data(nodes.slice(1))
+		    .enter()
+		    .append("circle")
+		    .attr("r", function(d) 
+		      {
+		       return d.radius; 
+		     })
+		    .style("fill", function(d, i) 
+		      {
+		       return color((i % 4)); 
+		     });
+
+		force.on("tick", function(e) 
+		{
+		  var q = d3.geom.quadtree(nodes),
+		      i = 0,
+		      n = nodes.length;
+
+		  while (++i < n) q.visit(collide(nodes[i]));
+
+		  svg.selectAll("circle")
+		      .attr("cx", function(d) { return d.x; })
+		      .attr("cy", function(d) { return d.y; })
+		      .on("mouseover", function(d)
+		        {
+		          tooltip.text(d.name);
+		          return tooltip.style("visibility", "visible");
+		        })
+		      .on("mousemove", function()
+		        {
+		          return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");
+		      })
+		      .on("mouseout", function()
+		        {
+		          return tooltip.style("visibility", "hidden");
+		        });
+		});
+
+		// svg.on("mousemove", function() {
+		//   var p1 = d3.mouse(this);
+		//   root.px = p1[0];
+		//   root.py = p1[1];
+		//   force.resume();
+		// });
+
+		function collide(node) {
+		  var r = node.radius + 16,
+		      nx1 = node.x - r,
+		      nx2 = node.x + r,
+		      ny1 = node.y - r,
+		      ny2 = node.y + r;
+		  return function(quad, x1, y1, x2, y2) {
+		    if (quad.point && (quad.point !== node)) {
+		      var x = node.x - quad.point.x,
+		          y = node.y - quad.point.y,
+		          l = Math.sqrt(x * x + y * y),
+		          r = node.radius + quad.point.radius;
+		      if (l < r) {
+		        l = (l - r) / l * .5;
+		        node.x -= x *= l;
+		        node.y -= y *= l;
+		        quad.point.x += x;
+		        quad.point.y += y;
+		      }
+		    }
+		    return x1 > nx2 || x2 < nx1 || y1 > ny2 || y2 < ny1;
+		  };
+		}
+
     });
 
 }
@@ -30,7 +171,7 @@ function DrawCategoryChart()
         {
         	console.log(element.name, element.timesVisited);
         	dataset.push([element.name, element.timesVisited]);
-        })
+        });
 
 		var w = 600;
 		var h = 300;
