@@ -111,17 +111,16 @@ function ViewGraphs()
     });
     chrome.tabs.query({currentWindow: true}, function (tab)
     {
-        var pattern = /chrome-extension:\/\/hdfncdlklhmfhffecjmglmlfgbmjbkck\/html\/graph\.html/img;
+        var pattern = new RegExp("chrome-extension:\/\/"+chrome.runtime.id+"\/html\/graph\.html");
+        console.log("RegExp: ", pattern);
         var count = 0;
         var tabIsOpenAlready = false;
         var currentTabIdIfOpen;
         var currentTabIndexIfOpen;
         tab.forEach(function(token)
         {
-            console.log(count++, token);
             if (pattern.test(token.url))
             {
-                console.log(token);
                 tabIsOpenAlready = true;
                 currentTabIdIfOpen = token.id;
                 currentTabIndexIfOpen = token.index;
@@ -129,17 +128,11 @@ function ViewGraphs()
         });
         if (tabIsOpenAlready) 
         {
-            console.log(currentTabIdIfOpen);
             chrome.tabs.reload(currentTabIdIfOpen);
-            chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window)
-                {
-
-                });
+            chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window){});
         }
         else
-        {
             window.open("graph.html",'_blank');
-        }
     });
 
 }
