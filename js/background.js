@@ -1,5 +1,10 @@
-
-
+chrome.runtime.onInstalled.addListener(function()
+{
+	chrome.storage.local.clear();
+	chrome.storage.local.set({readingPages: []});
+	chrome.storage.local.set({dataSets: []});
+	chrome.storage.local.set({categoryData: []});
+})
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 	if (changeInfo.status === "complete")
@@ -29,17 +34,45 @@ chrome.extension.onMessage.addListener(function(request, sender)
 {
 	if (request.action == "getContentText")
 	{
-		//console.log(request.source);
+		var categoryList = [];
 		$('#mw-normal-catlinks > ul > li > a', request.source).each(function()
 		{
-			console.log("..",$(this).html());
+			categoryList.push($(this).text());
 		});
+
+		MineCategories(categoryList);
 	}
 })
 
-chrome.runtime.onInstalled.addListener(function()
+function MineCategories(categoryNames)
 {
-	chrome.storage.local.clear();
-	chrome.storage.local.set({readingPages: []});
-	chrome.storage.local.set({dataSets: []});
-})
+	console.log(categoryNames);
+	chrome.storage.local.get("categoryData", function(val)
+    {
+        var existingCategoryData = val.categoryData;
+    	console.log("Val: ",existingCategoryData);
+    	
+    	categoryNames.forEach(function(categoryName)
+    		{
+				var pushNewCategory = true;
+    			var category = 
+    			{
+    				name: categoryName,
+    				timesVisited: 1
+    			};	
+    			existingCategoryData.forEach(function(existingCategory)
+    				{
+    					if (categoryName == existingCategory.name)
+    					{
+    						existingCategory.timesVisited++;
+    						pushNewCategory = false;
+    						console.log("DUPLICATE CATEGORY", categoryName);
+    					}
+    				});
+        		if (pushNewCategory) existingCategoryData.push(category);
+    		});
+
+    	console.log("Val: ",existingCategoryData);
+        chrome.storage.local.set({categoryData: existingCategoryData}, function(){}); 
+    });
+}
