@@ -29,7 +29,11 @@ chrome.extension.onMessage.addListener(function(request, sender)
 {
 	if (request.action == "getContentText")
 	{
-		console.log(request.source);
+		//console.log(request.source);
+		$('#mw-normal-catlinks > ul > li > a', request.source).each(function()
+		{
+			console.log("..",$(this).html());
+		});
 	}
 })
 

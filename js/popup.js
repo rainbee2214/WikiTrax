@@ -2,7 +2,6 @@ window.onload = OnWindowLoad;
 
 function OnWindowLoad()
 {
-
     $('#readingPageButton').click(function(){
       SetNewReadingPage();
     });
@@ -31,12 +30,9 @@ function OnWindowLoad()
 
 function SetNewReadingPage()
 {
-  console.log('This is the reading button.');
-  //Get current URL
-  //Get title of webpage
-  //Add to stack
   chrome.tabs.query({active: true}, function (tab)
   {
+    MineData(tab[0]);
     console.log(tab);
     var readingPage = 
     {
@@ -47,56 +43,34 @@ function SetNewReadingPage()
     $("#titleOfPage").html(readingPage.title);
     chrome.storage.local.get("readingPages", function(val)
     {
-        console.log(val);
         var existingReadingPages = val.readingPages;
-        if (!_.find(existingReadingPages, function(e){
+        if (!_.find(existingReadingPages, function(e)
+        {
             if (e.url == readingPage.url) return true;
-        })) existingReadingPages.push(readingPage);
-        console.log("Check order here: ", existingReadingPages);
+        })) 
+        existingReadingPages.push(readingPage);
         chrome.storage.local.set({readingPages: existingReadingPages});
     });
-
-    
-    MineData(tab[0].url.length);
-
   });
-
-  //Add data to the graphs
 }
 
 function GoBackToReadingPage()
 {
-    //If we are on a reading page, pop that page and go to reading pages.length - 1
-    //else go to reading pares.length -1 
-  //Pop the stack
-  //Go to that url [it is the last reading page we were on]
-
   var currentUrl;
   var lastReadingPageUrl;
   chrome.tabs.query({active: true}, function (tab)
   {
+    MineData(tab[0]);
     currentUrl = tab[0].url;
-    //window.open(tab[0].url,'_blank');
-    console.log("Extension ID: ", chrome.runtime.id);
-    MineData(tab[0].title.length);
     chrome.storage.local.get("readingPages", function(val)
     {
-    //if (val.readingPages.length > 2) lastReadingPageUrl = val.readingPages[val.readingPages.length-2].url;
-        
-        if (currentUrl == val.readingPages[val.readingPages.length-1].url) 
-            {
-                val.readingPages.pop();
-            }
+        if (currentUrl == val.readingPages[val.readingPages.length-1].url) val.readingPages.pop();
+        if (val.readingPages.length == 0) alert('my alert');
 
-        if (val.readingPages.length == 0)
-        {
-            alert('my alert');
-        }
         lastReadingPageUrl = val.readingPages[val.readingPages.length-1].url;
         chrome.tabs.update(tab[0].id, {url: lastReadingPageUrl});
         chrome.storage.local.set({readingPages: val.readingPages});
         $("#titleOfPage").html(val.readingPages[val.readingPages.length-1].title);
-        console.log("After button click.", val.readingPages);
     });
   });
   
@@ -105,15 +79,11 @@ function GoBackToReadingPage()
 
 function ViewGraphs()
 {
-    chrome.storage.local.get("dataSets", function(val)
-    {
-        console.log("Data sets: ",val);
-    });
     chrome.tabs.query({currentWindow: true}, function (tab)
     {
         var pattern = new RegExp("chrome-extension:\/\/"+chrome.runtime.id+"\/html\/graph\.html");
         console.log("RegExp: ", pattern);
-        var count = 0;
+
         var tabIsOpenAlready = false;
         var currentTabIdIfOpen;
         var currentTabIndexIfOpen;
@@ -139,14 +109,15 @@ function ViewGraphs()
 
 function MineData(tabData)
 {
-    var dataSet = tabData;
-    chrome.storage.local.get("dataSets", function(val)
-    {
-        var existingDataSets = val.dataSets;
-        existingDataSets.push(dataSet);
-        console.log("Data sets: ",existingDataSets);
-        chrome.storage.local.set({dataSets: existingDataSets});
-    });
+    console.log("Mining data: ",tabData);
+    // var dataSet = tabData;
+    // chrome.storage.local.get("dataSets", function(val)
+    // {
+    //     var existingDataSets = val.dataSets;
+    //     existingDataSets.push(dataSet);
+    //     console.log("Data sets: ",existingDataSets);
+    //     chrome.storage.local.set({dataSets: existingDataSets});
+    // });
 }
 
 function OnNewWikiPage(visited)
