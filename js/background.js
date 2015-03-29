@@ -35,7 +35,8 @@ chrome.extension.onMessage.addListener(function(request, sender)
 	if (request.action == "getContentText")
 	{
 		var categoryList = [];
-		$('#mw-normal-catlinks > ul > li > a', request.source).each(function()
+		var source = request.source.replace(/.*?\.wikimedia\.org\/.*?/g, "");
+		$('#mw-normal-catlinks > ul > li > a', source).each(function()
 		{
 			categoryList.push($(this).text());
 		});

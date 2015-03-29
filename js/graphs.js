@@ -43,15 +43,15 @@ function DrawForceGraphExample()
 			radii.push(element[1]);
 		});
 
-		var width = 960,
-		    height = 500;
+		var width = 1600,
+		    height = 900;
 
 		var sizeScale = 8;
 		var dataMaxRadius = d3.max(radii);
 		console.log("Max radius", dataMaxRadius);
 		var scale = d3.scale.linear()
 		      .domain([0, dataMaxRadius])
-		      .range([0,100]);
+		      .range([0,dataMaxRadius*15]);
 
 
 		console.log(scale(.75));
@@ -66,8 +66,8 @@ function DrawForceGraphExample()
 	    	var r = dataset[d][1];
 		     return {radius: scale(r), name: dataset[d][0]}; 
 		 	}),
-		    root = nodes[0],
-		    color = d3.scale.category20b();
+		    root = nodes[0];
+		    //color = d3.scale.category20b();
 
 			console.log("Nodes", nodes);
 		  root.radius = 0;
@@ -77,12 +77,14 @@ function DrawForceGraphExample()
 		    .gravity(0.05)
 		    //.charge(function(d, i) { return i ? 0 : -2000; })
 		    .nodes(nodes)
-		    .linkDistance(width*4)
+		    .linkDistance(width*8)
 		    .size([width, height]);
 
 		force.start();
 
 
+    	var randomInt = Math.round(Math.random()*10)%4;
+    	console.log("Random int", randomInt);
 		svg.selectAll("circle")
 		    .data(nodes.slice(1))
 		    .enter()
@@ -91,10 +93,45 @@ function DrawForceGraphExample()
 		      {
 		       return d.radius; 
 		     })
-		    .style("fill", function(d, i) 
-		      {
-		       return color((i % 4)); 
-		     });
+		    .style("fill",  function(d) {
+		    	var r,b,g;
+		    	//Blueish colours
+		    	switch(randomInt)
+		    	{
+		    		default:
+		    		case 0:
+		    		{
+		    			r = Math.round(Math.random() * ((d.radius)%75));
+		    			g = Math.round(Math.random() * ((d.radius*1000)%90))+100;
+		    			b = Math.round(Math.random() * ((d.radius*1000)%105))+150;
+		    			break;
+		    		}
+		    		case 1:
+		    		{
+		    			b = Math.round(Math.random() * ((d.radius)%75));
+		    			r = Math.round(Math.random() * ((d.radius*1000)%90))+100;
+		    			g = Math.round(Math.random() * ((d.radius*1000)%105))+150;
+		    			break;
+		    		}
+		    		case 2:
+		    		{
+		    			g = Math.round(Math.random() * ((d.radius)%75));
+		    			b = Math.round(Math.random() * ((d.radius*1000)%90))+100;
+		    			r = Math.round(Math.random() * ((d.radius*1000)%105))+150;
+		    			break;
+		    		}
+		    		case 3:
+		    		{
+		    			b = Math.round(Math.random() * ((d.radius)%75));
+		    			g = Math.round(Math.random() * ((d.radius*1000)%90))+100;
+		    			r = Math.round(Math.random() * ((d.radius*1000)%105))+150;
+		    			break;
+		    		}
+		    	}
+
+		    	//console.log(r,g,b);
+		         return "rgb("+r+ ","+g+", "+b+")";
+		    });
 
 		force.on("tick", function(e) 
 		{
@@ -122,14 +159,10 @@ function DrawForceGraphExample()
 		        });
 		});
 
-		// svg.on("mousemove", function() {
-		//   var p1 = d3.mouse(this);
-		//   root.px = p1[0];
-		//   root.py = p1[1];
-		//   force.resume();
-		// });
 
-		function collide(node) {
+
+		function collide(node) 
+		{
 		  var r = node.radius + 16,
 		      nx1 = node.x - r,
 		      nx2 = node.x + r,
