@@ -5,6 +5,24 @@
   "description": "Track your wikipedia page flow",
   "version": "0.1.0",
 
+  "commands": {
+     "toggle-feature-foo": {
+       "suggested_key": {
+         "default": "Ctrl+Shift+Y",
+         "mac": "Command+Shift+Y"
+       },
+       "description": "This is a keyboard shortcut"
+     },
+     "_execute_browser_action": {
+       "suggested_key": {
+         "windows": "Ctrl+Shift+M",
+         "mac": "Command+Shift+Y",
+         "chromeos": "Ctrl+Shift+U",
+         "linux": "Ctrl+Shift+J"
+       }
+     }
+   },
+
   "background": {
     "scripts": ["js/jquery.min.js", "js/background.js"],
     "persistent": false

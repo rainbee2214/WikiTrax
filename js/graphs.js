@@ -7,26 +7,41 @@ function OnWindowLoad()
 {
     chrome.storage.local.get("dataSets", function(val)
     {
-        //console.log("Data sets: ",val.dataSets);
-        //DrawBarChart(val.dataSets);
-        //ExampleDrawScatterPlot();
-        // DrawDotChart(val.dataSets);
-        DrawForceGraphExample();
+    	currentChart = Math.round(Math.random()*100)%2;
+    	// console.log("Current chart:" ,currentChart);
+        switch(currentChart)
+        {
+        	default:
+        	case 0:
+        	{
+        		DrawForceGraphExample(); break;
+        	} 
+        	case 1:
+        	{
+        		DrawCategoryChart(); break;
+        	} 
+        }
+        //DrawForceGraphExample();
     });
 
+    d3.select("body").on("click", function() 
+    {
+    	//console.log("Clicking body");
+	    chrome.tabs.query({highlighted: true}, function (tab)
+	    {
+			chrome.tabs.reload(tab[0].id);
+			chrome.tabs.highlight({tabs: tab[0].index}, function(window){});
+	    });
+    });
 }
 
 function DrawForceGraphExample()
 {
-
-	var categoryDataset;
+	// console.log("Drawing category chart");
 	var dataset = [];
 	chrome.storage.local.get("categoryData", function(val)
 	{
-		console.log("Drawing graph......");
-	    categoryDataset = val.categoryData;
-
-	    categoryDataset.forEach(function(element)
+	    val.categoryData.forEach(function(element)
 	    {
 	    	dataset.push([element.name, element.timesVisited]);
 	    });
@@ -36,6 +51,13 @@ function DrawForceGraphExample()
 		  .style("position", "absolute")
 		  .style("z-index", "10")
 		  .style("visibility", "hidden")
+		  .style("color", "black")
+		  .style("background-color", "white")
+		  .style("opacity", "0.85")
+		  .style("display", "block")
+		  .style("padding", "5px")
+		  .style("border-radius", "3px")
+		  .style("border", "1px solid black")
 
 		var radii = [];
 		dataset.forEach(function(element)
@@ -46,54 +68,47 @@ function DrawForceGraphExample()
 		var width = 1600,
 		    height = 900;
 
+		var rangeScale = 75 * dataset.length/75;
 		var sizeScale = 8;
 		var dataMaxRadius = d3.max(radii);
-		console.log("Max radius", dataMaxRadius);
+		// console.log("Max radius", dataMaxRadius);
 		var scale = d3.scale.linear()
 		      .domain([0, dataMaxRadius])
-		      .range([0,dataMaxRadius*15]);
-
-
-		console.log(scale(.75));
-		console.log(scale(9));
+		      .range([0, (dataMaxRadius>rangeScale) ? dataMaxRadius/2 : rangeScale]);
 
 		var svg = d3.select("body").append("svg")
 		    .attr("width", width)
-		    .attr("height", height);
+		    .attr("height", height*1.5);
 
 		var nodes = d3.range(dataset.length).map(function(d) 
 		    {
-	    	var r = dataset[d][1];
-		     return {radius: scale(r), name: dataset[d][0]}; 
+		     return {radius: scale(dataset[d][1]), name: dataset[d][0]}; 
 		 	}),
 		    root = nodes[0];
-		    //color = d3.scale.category20b();
+			root.radius = 0;
+			root.fixed = true;
 
-			console.log("Nodes", nodes);
-		  root.radius = 0;
-		  root.fixed = true;
+			// console.log("Nodes", nodes);
 
 		var force = d3.layout.force()
-		    .gravity(0.05)
-		    //.charge(function(d, i) { return i ? 0 : -2000; })
+		    .gravity(0.095)
 		    .nodes(nodes)
-		    .linkDistance(width*8)
 		    .size([width, height]);
 
 		force.start();
 
-
     	var randomInt = Math.round(Math.random()*10)%4;
-    	console.log("Random int", randomInt);
+    	// console.log("Random int", randomInt);
 		svg.selectAll("circle")
 		    .data(nodes.slice(1))
 		    .enter()
 		    .append("circle")
 		    .attr("r", function(d) 
-		      {
-		       return d.radius; 
-		     })
-		    .style("fill",  function(d) {
+		    {
+		    	return d.radius; 
+		    })
+		    .style("fill",  function(d) 
+		    {
 		    	var r,b,g;
 		    	//Blueish colours
 		    	switch(randomInt)
@@ -192,17 +207,16 @@ function DrawForceGraphExample()
 
 function DrawCategoryChart()
 {
-	console.log("Drawing graph");
+	// console.log("Drawing graph");
 	var categoryDataset;
 	var dataset = [];
 	chrome.storage.local.get("categoryData", function(val)
     {
-		console.log("Drawing graph......");
         categoryDataset = val.categoryData;
 
         categoryDataset.forEach(function(element)
         {
-        	console.log(element.name, element.timesVisited);
+        	// console.log(element.name, element.timesVisited);
         	dataset.push([element.name, element.timesVisited]);
         });
 
@@ -279,6 +293,7 @@ function DrawCategoryChart()
 
 function DrawDotChart()
 {
+	// console.log("Drawing dot category chart.");
 	var categoryDataset = [];
 	var dataset = [];
 	chrome.storage.local.get("categoryData", function(val)
@@ -310,7 +325,7 @@ function DrawDotChart()
 
 function DrawBarChart(dataset)
 {
-	console.log("DrawGraph 1: ", dataset);
+	// console.log("DrawGraph 1: ", dataset);
 		var w = 600;
 		var h = 250;
 		var barPadding = 30;
@@ -347,7 +362,7 @@ function DrawBarChart(dataset)
 		   		return yScale(d);
 		   });
 		
-	console.log("Finished DrawGraph");
+	// console.log("Finished DrawGraph");
        		   
 }
 
@@ -396,7 +411,7 @@ function DrawRandomBarChart()
 		d3.select("p")
 		    .on("click", function() 
 		    {
-		    	console.log("Clicking");
+		    	// console.log("Clicking");
 		        // //New values for dataset
 				var dataset = [];                        //Initialize empty array
 			 	for (var i = 0; i < 25; i++) 

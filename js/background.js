@@ -29,6 +29,10 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 	}
 });
 
+chrome.commands.onCommand.addListener(function(command) 
+{
+      console.log('Command:', command);
+});
 
 chrome.extension.onMessage.addListener(function(request, sender)
 {
@@ -76,4 +80,35 @@ function MineCategories(categoryNames)
     	console.log("Val: ",existingCategoryData);
         chrome.storage.local.set({categoryData: existingCategoryData}, function(){}); 
     });
+}
+
+
+function ViewGraphs()
+{
+    chrome.tabs.query({currentWindow: true}, function (tab)
+    {
+        var pattern = new RegExp("chrome-extension:\/\/"+chrome.runtime.id+"\/html\/graph\.html");
+        console.log("RegExp: ", pattern);
+
+        var tabIsOpenAlready = false;
+        var currentTabIdIfOpen;
+        var currentTabIndexIfOpen;
+        tab.forEach(function(token)
+        {
+            if (pattern.test(token.url))
+            {
+                tabIsOpenAlready = true;
+                currentTabIdIfOpen = token.id;
+                currentTabIndexIfOpen = token.index;
+            } 
+        });
+        if (tabIsOpenAlready) 
+        {
+            chrome.tabs.reload(currentTabIdIfOpen);
+            chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window){});
+        }
+        else
+            window.open("graph.html",'_blank');
+    });
+
 }

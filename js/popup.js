@@ -79,31 +79,33 @@ function GoBackToReadingPage()
 
 function ViewGraphs()
 {
-    chrome.tabs.query({currentWindow: true}, function (tab)
-    {
-        var pattern = new RegExp("chrome-extension:\/\/"+chrome.runtime.id+"\/html\/graph\.html");
-        console.log("RegExp: ", pattern);
+    var backgroundPage = chrome.extension.getBackgroundPage();
+    backgroundPage.ViewGraphs();
+    // chrome.tabs.query({currentWindow: true}, function (tab)
+    // {
+    //     var pattern = new RegExp("chrome-extension:\/\/"+chrome.runtime.id+"\/html\/graph\.html");
+    //     console.log("RegExp: ", pattern);
 
-        var tabIsOpenAlready = false;
-        var currentTabIdIfOpen;
-        var currentTabIndexIfOpen;
-        tab.forEach(function(token)
-        {
-            if (pattern.test(token.url))
-            {
-                tabIsOpenAlready = true;
-                currentTabIdIfOpen = token.id;
-                currentTabIndexIfOpen = token.index;
-            } 
-        });
-        if (tabIsOpenAlready) 
-        {
-            chrome.tabs.reload(currentTabIdIfOpen);
-            chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window){});
-        }
-        else
-            window.open("graph.html",'_blank');
-    });
+    //     var tabIsOpenAlready = false;
+    //     var currentTabIdIfOpen;
+    //     var currentTabIndexIfOpen;
+    //     tab.forEach(function(token)
+    //     {
+    //         if (pattern.test(token.url))
+    //         {
+    //             tabIsOpenAlready = true;
+    //             currentTabIdIfOpen = token.id;
+    //             currentTabIndexIfOpen = token.index;
+    //         } 
+    //     });
+    //     if (tabIsOpenAlready) 
+    //     {
+    //         chrome.tabs.reload(currentTabIdIfOpen);
+    //         chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window){});
+    //     }
+    //     else
+    //         window.open("graph.html",'_blank');
+    // });
 
 }
 
