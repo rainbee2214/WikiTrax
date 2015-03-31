@@ -108,7 +108,7 @@ function ViewGraphs()
             chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window){});
         }
         else
-            window.open("graph.html",'_blank');
+            window.open("html/graph.html",'_blank');
     });
 
 }

@@ -7,7 +7,7 @@ function OnWindowLoad()
 {
     chrome.storage.local.get("dataSets", function(val)
     {
-    	currentChart = Math.round(Math.random()*100)%2;
+    	//currentChart = Math.round(Math.random()*100)%2;
     	// console.log("Current chart:" ,currentChart);
         switch(currentChart)
         {
