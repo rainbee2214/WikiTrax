@@ -19,7 +19,7 @@
 	<script>
 		var w = 1000;
 		var h = 1000;
-		var dataset = [10,20,80,90,80,70,60,50,40,50,60,70,80,90,100,110,120,130,120,110,100,90];
+		var dataset = [10,20,30,40,50,60,70, 80, 90,100];//,50,40,50,60,70,80,90,100,110,120,130,120,110,100,90];
 		var data = [
 		{x: 100, y: 0},
 		{x: 250, y: 130},
@@ -41,7 +41,7 @@
 		// 				.ticks(5);
 
 		var colorScale = d3.scale.ordinal()
-						.range(["green", "blue", "yellow", "red"]);
+						.range(["green", "blue", "yellow", "red", "pink"]);
 
 		var svg = d3.select("body")
 						.append("svg")
@@ -49,7 +49,7 @@
 						.attr("height", h);
 
 		var group = svg.append("g")
-			.attr("transform", "translate(500,500)");
+			.attr("transform", "translate(200,200)");
 
 		var line = d3.svg.line()
 			.x(function(d){return d.x;})
@@ -82,6 +82,8 @@
 			.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")";})
 			.attr("text-anchor", "middle")
 			.text(function (d) { return d.data; });
+
+
 		// group//.selectAll("path")
 		// 	//.data([data])
 		// 	//.enter()
