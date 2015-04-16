@@ -7,8 +7,7 @@ function OnWindowLoad()
 {
     chrome.storage.local.get("dataSets", function(val)
     {
-    	//currentChart = Math.round(Math.random()*100)%2;
-    	// console.log("Current chart:" ,currentChart);
+    	//Check the local storage to pull which chart and set current chart accordingly
         switch(currentChart)
         {
         	default:
@@ -21,12 +20,11 @@ function OnWindowLoad()
         		DrawCategoryChart(); break;
         	} 
         }
-        //DrawForceGraphExample();
     });
 
     d3.select("body").on("click", function() 
     {
-    	//console.log("Clicking body");
+    	console.log("Clicking body");
 	    chrome.tabs.query({highlighted: true}, function (tab)
 	    {
 			chrome.tabs.reload(tab[0].id);

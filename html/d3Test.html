@@ -19,7 +19,7 @@
 	<script>
 		var w = 1000;
 		var h = 1000;
-		var dataset = [10,20,30,40,50,60,70, 80, 90,100];//,50,40,50,60,70,80,90,100,110,120,130,120,110,100,90];
+		var dataset = [70,55,50,40,50,60,75, 80, 90,100];//,50,40,50,60,70,80,90,100,110,120,130,120,110,100,90];
 		var data = [
 		{x: 100, y: 0},
 		{x: 250, y: 130},
@@ -30,9 +30,9 @@
 		// 				.domain([0,d3.max(dataset)])
 		// 				.range([0,w]);
 
-		// var colorScale = d3.scale.linear()
-		// 				.domain([0,d3.max(dataset)])
-		// 				.range(["green", "blue"]);
+		var colorScale = d3.scale.linear()
+						.domain([0,d3.max(dataset)])
+						.range(["blue", "green"]);
 
 						
 		// var xAxis = d3.svg.axis()
@@ -40,8 +40,8 @@
 		// 				.orient("bottom")
 		// 				.ticks(5);
 
-		var colorScale = d3.scale.ordinal()
-						.range(["green", "blue", "yellow", "red", "pink"]);
+		// var colorScale = d3.scale.ordinal()
+		// 				.range(["green", "blue", "yellow", "red", "pink"]);
 
 		var svg = d3.select("body")
 						.append("svg")
