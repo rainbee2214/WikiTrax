@@ -7,6 +7,7 @@ function OnWindowLoad()
 {
     chrome.storage.local.get("dataSets", function(val)
     {
+
     	chrome.storage.local.get("currentChart", function(val)
     	//Check the local storage to pull which chart and set current chart accordingly
     	{
