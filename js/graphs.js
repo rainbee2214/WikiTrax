@@ -1,36 +1,54 @@
 window.onload = OnWindowLoad;
 
 var currentChart = 0;
-var allCharts = ["Bar", "Dot"];
+var allCharts = ["Force","Category", "Bar"];
 
 function OnWindowLoad()
 {
     chrome.storage.local.get("dataSets", function(val)
     {
-    	//currentChart = Math.round(Math.random()*100)%2;
-    	// console.log("Current chart:" ,currentChart);
-        switch(currentChart)
-        {
-        	default:
-        	case 0:
-        	{
-        		DrawForceGraphExample(); break;
-        	} 
-        	case 1:
-        	{
-        		DrawCategoryChart(); break;
-        	} 
-        }
-        //DrawForceGraphExample();
+    	chrome.storage.local.get("currentChart", function(val)
+    	//Check the local storage to pull which chart and set current chart accordingly
+    	{
+	        switch(val.currentChart.id)
+	        {
+	        	default:
+	        	case 0:
+	        	{
+	        		console.log("Force chart");
+	        		DrawForceGraphExample(); break;
+	        	} 
+	        	case 1:
+	        	{
+	        		console.log("Category chart");
+	        		DrawCategoryChart(); break;
+	        	} 
+	        	case 2:
+	        	{
+	        		console.log("Bar chart");
+	        		DrawRandomBarChart(); break;
+	        	} 
+	        }
+    	});
     });
 
     d3.select("body").on("click", function() 
     {
-    	//console.log("Clicking body");
+    	console.log("Clicking body");
 	    chrome.tabs.query({highlighted: true}, function (tab)
 	    {
-			chrome.tabs.reload(tab[0].id);
-			chrome.tabs.highlight({tabs: tab[0].index}, function(window){});
+	    	chrome.storage.local.get("currentChart", function (val)
+	    	{
+	    	    cur = val.currentChart.id;
+	    	    cur++;
+	    	    if (cur >= allCharts.length) cur = 0;
+	    	    val.currentChart.id = cur;
+	    	    chrome.storage.local.set({currentChart: val.currentChart}, function()
+	    	    {
+	    	    	chrome.tabs.reload(tab[0].id);
+	    	    	chrome.tabs.highlight({tabs: tab[0].index}, function(window){});
+	    	    });
+	    	});
 	    });
     });
 }
@@ -216,7 +234,6 @@ function DrawCategoryChart()
 
         categoryDataset.forEach(function(element)
         {
-        	// console.log(element.name, element.timesVisited);
         	dataset.push([element.name, element.timesVisited]);
         });
 

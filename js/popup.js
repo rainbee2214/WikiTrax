@@ -65,7 +65,7 @@ function GoBackToReadingPage()
     chrome.storage.local.get("readingPages", function(val)
     {
         if (currentUrl == val.readingPages[val.readingPages.length-1].url) val.readingPages.pop();
-        if (val.readingPages.length == 0) alert('my alert');
+        if (val.readingPages.length == 0) alert('This is your only reading page right now!');
 
         lastReadingPageUrl = val.readingPages[val.readingPages.length-1].url;
         chrome.tabs.update(tab[0].id, {url: lastReadingPageUrl});
@@ -81,45 +81,11 @@ function ViewGraphs()
 {
     var backgroundPage = chrome.extension.getBackgroundPage();
     backgroundPage.ViewGraphs();
-    // chrome.tabs.query({currentWindow: true}, function (tab)
-    // {
-    //     var pattern = new RegExp("chrome-extension:\/\/"+chrome.runtime.id+"\/html\/graph\.html");
-    //     console.log("RegExp: ", pattern);
-
-    //     var tabIsOpenAlready = false;
-    //     var currentTabIdIfOpen;
-    //     var currentTabIndexIfOpen;
-    //     tab.forEach(function(token)
-    //     {
-    //         if (pattern.test(token.url))
-    //         {
-    //             tabIsOpenAlready = true;
-    //             currentTabIdIfOpen = token.id;
-    //             currentTabIndexIfOpen = token.index;
-    //         } 
-    //     });
-    //     if (tabIsOpenAlready) 
-    //     {
-    //         chrome.tabs.reload(currentTabIdIfOpen);
-    //         chrome.tabs.highlight({tabs: currentTabIndexIfOpen}, function(window){});
-    //     }
-    //     else
-    //         window.open("graph.html",'_blank');
-    // });
-
 }
 
 function MineData(tabData)
 {
     console.log("Mining data: ",tabData);
-    // var dataSet = tabData;
-    // chrome.storage.local.get("dataSets", function(val)
-    // {
-    //     var existingDataSets = val.dataSets;
-    //     existingDataSets.push(dataSet);
-    //     console.log("Data sets: ",existingDataSets);
-    //     chrome.storage.local.set({dataSets: existingDataSets});
-    // });
 }
 
 function OnNewWikiPage(visited)
