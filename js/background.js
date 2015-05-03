@@ -12,11 +12,8 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 		var wikiRegex  = /^http[s]?:\/\/[\w]*\.wikipedia\.org\/wiki\/.*$/img;
 		if (wikiRegex.test(tab.url))
 		{
-			//console.log(tab);
 			var titleOfPage = tab.title;
-			//console.log("Sending data to graphs..");
 			titleOfPage = titleOfPage.substr(0,titleOfPage.length-35);
-			//console.log("Title of Page: ", titleOfPage);
 
 			chrome.tabs.executeScript(tabId, {
 			    code: "chrome.extension.sendMessage({action: 'getContentText', source: document.body.innerHTML, location: window.location});"
@@ -71,13 +68,12 @@ function MineCategories(categoryNames)
     					{
     						existingCategory.timesVisited++;
     						pushNewCategory = false;
-    						console.log("DUPLICATE CATEGORY", categoryName);
+    						//console.log("DUPLICATE CATEGORY", categoryName);
     					}
     				});
         		if (pushNewCategory) existingCategoryData.push(category);
     		});
 
-    	console.log("Val: ",existingCategoryData);
         chrome.storage.local.set({categoryData: existingCategoryData}, function(){}); 
     });
 }
@@ -88,12 +84,11 @@ function ViewGraphs()
     chrome.tabs.query({currentWindow: true}, function (tab)
     {
         var pattern = new RegExp("chrome-extension:\/\/"+chrome.runtime.id+"\/html\/graph\.html");
-        console.log("RegExp: ", pattern);
-
         var tabIsOpenAlready = false;
         var currentTabIdIfOpen;
         var currentTabIndexIfOpen;
-        tab.forEach(function(token)
+
+        tab.forEach(function(token) // Check all the open tabs for a graph
         {
             if (pattern.test(token.url))
             {
@@ -102,6 +97,7 @@ function ViewGraphs()
                 currentTabIndexIfOpen = token.index;
             } 
         });
+
         if (tabIsOpenAlready) 
         {
             chrome.tabs.reload(currentTabIdIfOpen);
