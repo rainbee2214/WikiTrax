@@ -26,6 +26,83 @@
 		{x: 400, y: 0},
 		{x: 100, y: 0},
 		];
+
+		var svg = d3.select("body")
+				.append("svg")
+				.attr("width", w)
+				.attr("height", h)
+				.append("g")
+				.attr("transform", "translate(500,500)");
+
+		var tree = d3.layout.tree()
+				.size([500,500]);
+		
+		var treeData = [
+		  {
+		    "name": "Top Level",
+		    "parent": "null",
+		    "radius": 10,
+		    "children": [
+		      {
+		        "name": "Level 2: A",
+		        "parent": "Top Level",
+		    	"radius": 20,
+		        "children": [
+		          {
+		            "name": "Son of A",
+		            "parent": "Level 2: A",
+		    		"radius": 30,
+		          },
+		          {
+		            "name": "Daughter of A",
+		            "parent": "Level 2: A",
+		    		"radius": 30,
+		          },
+		          {
+		            "name": "Daughter of A",
+		            "parent": "Level 2: A",
+		    		"radius": 30,
+		          }
+		        ]
+		      },
+		      {
+		        "name": "Level 2: B",
+		        "parent": "Top Level",
+		    	"radius": 20,
+		      },
+		      {
+		        "name": "Level 2: B",
+		        "parent": "Top Level",
+		    	"radius": 20,
+		      },
+		      {
+		        "name": "Level 2: B",
+		        "parent": "Top Level",
+		    	"radius": 20,
+		      }
+		    ]
+		  }
+		];
+
+		var rootNode = treeData[0];
+
+			var nodes = tree.nodes(rootNode);
+			var links = tree.links(nodes);
+
+			var node = svg.selectAll(".node")
+				.data(nodes)
+				.enter()
+				.append("g")
+				.attr("class", "node")
+				.attr("transform", function (d) { return "translate("+ d.x + "," + d.y + ")";});
+
+			node.append("circle")
+				.attr("r", function (d) { return d.radius;})
+				.attr("fill", "steelblue");
+
+			node.append("text")
+				.text(function (d) { console.log(d); return d.name;});
+
 		// var xScale = d3.scale.linear()
 		// 				.domain([0,d3.max(dataset)])
 		// 				.range([0,w]);
@@ -40,48 +117,48 @@
 		// 				.orient("bottom")
 		// 				.ticks(5);
 
-		var colorScale = d3.scale.ordinal()
-						.range(["green", "blue", "yellow", "red"]);
+		// var colorScale = d3.scale.ordinal()
+		// 				.range(["green", "blue", "yellow", "red"]);
 
-		var svg = d3.select("body")
-						.append("svg")
-						.attr("width", w)
-						.attr("height", h);
+		// var svg = d3.select("body")
+		// 				.append("svg")
+		// 				.attr("width", w)
+		// 				.attr("height", h);
 
-		var group = svg.append("g")
-			.attr("transform", "translate(500,500)");
+		// var group = svg.append("g")
+		// 	.attr("transform", "translate(500,500)");
 
-		var line = d3.svg.line()
-			.x(function(d){return d.x;})
-			.y(function(d){return d.y;});
+		// var line = d3.svg.line()
+		// 	.x(function(d){return d.x;})
+		// 	.y(function(d){return d.y;});
  
-		var r = 100;
-		var C = Math.PI*2;
-		var arcWidth = 30;
+		// var r = 100;
+		// var C = Math.PI*2;
+		// var arcWidth = 30;
 
-		var arc = d3.svg.arc()
-			.innerRadius(r-arcWidth)
-			.outerRadius(r);
-			// .startAngle(0)
-			// .endAngle(C/6);
+		// var arc = d3.svg.arc()
+		// 	.innerRadius(r-arcWidth)
+		// 	.outerRadius(r);
+		// 	// .startAngle(0)
+		// 	// .endAngle(C/6);
 
-		var pie = d3.layout.pie()
-			.value(function (d) { return d;});
+		// var pie = d3.layout.pie()
+		// 	.value(function (d) { return d;});
 
-		var arcs = group.selectAll(".arc")
-			.data(pie(dataset))
-			.enter()
-			.append("g")
-			.attr("class", "arc");
+		// var arcs = group.selectAll(".arc")
+		// 	.data(pie(dataset))
+		// 	.enter()
+		// 	.append("g")
+		// 	.attr("class", "arc");
 
-		arcs.append("path")
-			.attr("d", arc)
-			.attr("fill", function (d) { return colorScale(d.data);})
+		// arcs.append("path")
+		// 	.attr("d", arc)
+		// 	.attr("fill", function (d) { return colorScale(d.data);})
 
-		arcs.append("text")
-			.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")";})
-			.attr("text-anchor", "middle")
-			.text(function (d) { return d.data; });
+		// arcs.append("text")
+		// 	.attr("transform", function (d) { return "translate(" + arc.centroid(d) + ")";})
+		// 	.attr("text-anchor", "middle")
+		// 	.text(function (d) { return d.data; });
 		// group//.selectAll("path")
 		// 	//.data([data])
 		// 	//.enter()

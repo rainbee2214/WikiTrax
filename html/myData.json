@@ -1,0 +1,17 @@
+{
+	"name": "Sarah",
+	"children":
+	{
+		"name": "Joel",
+		"children":
+		{
+			"name": "Rosa",
+			"name": "Blue"
+		},
+		"name": "Emma",
+		"children":
+		{
+			"name": "Copper"
+		}
+	}
+}
